@@ -1,10 +1,44 @@
-**/bin/
-**/obj/
+# Dependencies and generated frontend files
 **/node_modules/
 **/dist/
+**/.vite/
+**/coverage/
+
+# .NET build output
+**/bin/
+**/obj/
+**/TestResults/
+*.user
+*.suo
+
+# SQLite databases and journals (NEVER COMMIT REAL DATA)
 **/Data/*.db
 **/Data/*.db-shm
 **/Data/*.db-wal
+**/Data/*.db-journal
+*.sqlite
+*.sqlite3
+
+# Secrets / local environments
 .env
-*.user
+.env.*
+!.env.example
+**/appsettings.Development.json
+**/appsettings.Production.json
+**/appsettings.Staging.json
+**/appsettings.Local.json
+**/appsettings.*.local.json
+*.pfx
+*.p12
+*.pem
+*.key
+
+# OS / IDE
 .vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Temp logs
+*.log
+npm-debug.log*

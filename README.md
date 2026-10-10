@@ -1,28 +1,195 @@
-# ProjectPulse — Starter MVP v0.4 (Admin + BA Timeline + REQ ID)
+<div align="center">
 
-Project portfolio monitoring: **BA → Project Manager → Department Head → Division Head**.
+<img src="frontend/public/branding/logo.png" alt="ProjectPulse logo" width="112" />
 
-**Status:** source-code starter yang belum diuji build end-to-end (lingkungan pembuat artifact tidak mempunyai .NET SDK maupun koneksi paket npm/NuGet). Disediakan prototype HTML standalone yang dapat dibuka tanpa instalasi. **Bukan versi production-ready.**
+# ProjectPulse
 
-## Stack
+### One place to manage projects. One clear view for every management level.
 
-| Lingkungan | Frontend | Backend | Database | Login |
-|---|---|---|---|---|
-| Local Windows (sekarang) | React 19 + TS + Vite 7 | ASP.NET Core / .NET 10 | **SQLite file `backend/Data/projectpulse.db`** | **Login email/password demo, loopback saja** |
-| Server development (nanti) | React build | ASP.NET Core / .NET 10 | **PostgreSQL 17+** | JWT / Microsoft Microsoft Entra ID (integrasi frontend MSAL belum dibuat) |
+**Enterprise Project Portfolio, Resource & Delivery Monitoring**
 
-Prinsip: backend EF Core memakai provider `Sqlite` atau `Postgres` melalui konfigurasi. Business API tidak diganti. **Data SQLite tidak secara otomatis berpindah ke PostgreSQL.** Skema PostgreSQL dibuat lewat skrip SQL tersendiri; migrasi data perlu prosedur ETL / import terpisah.
+Pantau proyek dari pekerjaan harian Business Analyst hingga gambaran menyeluruh untuk Division Head — **dalam satu aplikasi, dengan satu sumber data.**
 
-## 1. Menjalankan lokal Windows 11
+![ProjectPulse](https://img.shields.io/badge/ProjectPulse-v0.4-2563eb?style=flat-square)
+![Status](https://img.shields.io/badge/status-MVP%20%2F%20local%20demo-f59e0b?style=flat-square)
+![Frontend](https://img.shields.io/badge/React-19-149eca?logo=react&logoColor=white&style=flat-square)
+![Backend](https://img.shields.io/badge/.NET-10-512bd4?logo=dotnet&logoColor=white&style=flat-square)
+![Database](https://img.shields.io/badge/SQLite%20%7C%20PostgreSQL-supported-336791?style=flat-square)
 
-Prerequisite:
-- **.NET SDK 10** (`dotnet --version`)
-- **Node.js 22.12+** (`node --version`; 22.16+ sudah memadai)
-- npm (bundled with Node.js)
+[**Overview**](#-overview) · [**Features**](#-key-features) · [**Screenshots**](#-interface-preview) · [**Tech Stack**](#-technology-stack) · [**Getting Started**](#-getting-started) · [**Roadmap**](#-roadmap)
 
-Ekstrak ZIP ke contoh `C:\work\ProjectPulse`. Buka **dua Windows Terminal / PowerShell**.
+</div>
 
-Terminal A — backend:
+---
+
+## 🎯 Overview
+
+**ProjectPulse** adalah aplikasi web internal untuk memantau *project delivery*, kepemilikan pekerjaan, kapasitas resource, milestone, dan kendala di lingkungan divisi IT.
+
+Satu perubahan yang dibuat BA pada task atau timeline dapat menjadi informasi operasional bagi Project Manager, laporan departemen bagi Department Head, dan ringkasan portfolio bagi Division Head.
+
+> **Core principle:** **Update once, monitor at every level.**
+>
+> Data pekerjaan diperbarui oleh pemilik pekerjaan; pimpinan memantau informasi yang sama sesuai hak aksesnya.
+
+### Masalah yang ingin diselesaikan
+
+- Status proyek tersebar di banyak file atau laporan manual.
+- Progress terlihat bagus secara persentase, padahal milestone atau issue kritis tertahan.
+- Atasan sulit melihat proyek yang terlambat dan siapa yang bertanggung jawab atas tindak lanjutnya.
+- BA dari satu tim dapat membantu proyek tim lain, namun informasi kepemilikan resource sering rancu.
+- Timeline, fase berjalan, requester Head Office, dan kendala tidak tersedia dalam satu tampilan.
+
+## ✨ Key Features
+
+| Modul | Kemampuan |
+|:--|:--|
+| **Executive Portfolio** | Ringkasan project health, distribusi current phase, delivery calendar, daftar proyek dan drill-down per lingkup jabatan. |
+| **Project Management** | PM membuat project, memilih BA penanggung jawab timeline, dan menambahkan anggota project. |
+| **BA Timeline Ownership** | BA yang ditunjuk mengelola milestone, tanggal planned/forecast, progress, current status, dan project health. |
+| **My Tasks** | BA membuat dan memperbarui task miliknya, priority, due date, status, dan catatan aktivitas. |
+| **Issue & Escalation** | Registrasi blocker, severity, action plan, status penyelesaian, dan penanggung jawab. |
+| **Resource Borrowing** | BA dapat memiliki atasan PM A tetapi menjadi member project yang dipimpin PM B. |
+| **Admin & Organization** | Tambah/edit/nonaktifkan user; atur department, role, dan *home reporting PM* tanpa menghapus assignment project. |
+| **Requester Head Office** | Simpan nama dan departemen user HO sebagai informasi project, tanpa memberikan akses aplikasi. |
+| **REQ ID** | Kode proyek unik berformat `REQYYYYMMDDNNN`, misalnya `REQ20261010001`. |
+| **Audit & Activity** | Rekam perubahan kegiatan dan perkembangan task/project untuk kebutuhan penelusuran. |
+
+### Project health ≠ current status
+
+ProjectPulse membedakan **kondisi** proyek dari **fase** pengerjaan proyek:
+
+| Health | Current Status |
+|:--|:--|
+| `On Track` | `Requirement` |
+| `At Risk` | `Design` |
+| `Delayed` | `Development` |
+| `Blocked` | `SIT`, `UAT`, `Implementation`, `PIR`, dll. |
+
+Contoh: **Development · Blocked** berarti proyek masih pada fase development dan sedang mengalami hambatan. Keduanya ditampilkan berdampingan agar pembaca laporan tidak salah menyimpulkan.
+
+## 🖥️ Interface Preview
+
+**Executive dashboard — portfolio health, delivery pipeline & delivery calendar**
+
+![Executive Portfolio Dashboard](previews/executive.png)
+
+<details>
+<summary><b>📌 Lihat BA Workspace</b></summary>
+<br />
+
+![Business Analyst Workspace](previews/ba.png)
+
+</details>
+
+<details>
+<summary><b>📅 Lihat Project Timeline</b></summary>
+<br />
+
+![Project Timeline](previews/gantt.png)
+
+</details>
+
+> **Preview:** menggunakan data dummy. Visualisasi Gantt pada MVP masih sederhana; workflow persetujuan baseline formal belum tersedia.
+
+## 🏢 Roles & Access
+
+```mermaid
+flowchart TD
+    DIV[Division Head IT] --> DEPT[Department Head]
+    DEPT --> PM[Project Manager]
+    PM --> BA[Business Analyst]
+    ADMIN[System Admin] -. manages users & reporting lines .-> PM
+    PM -. assigns to project across teams .-> BA
+```
+
+| Role | Fokus penggunaan |
+|:--|:--|
+| **Admin** | Mengelola user, role, department, reporting PM, dan penanggung jawab timeline. |
+| **Division Head** | Helicopter view seluruh project dalam lingkup divisinya. |
+| **Department Head** | Memantau project, risiko, dan delivery departemennya. |
+| **Project Manager** | Membuat project, menunjuk BA, melakukan resource assignment dan monitoring; **tidak mengubah progress/timeline BA**. |
+| **Business Analyst** | Mengerjakan task, mengelola issue, serta mengelola milestone/timeline jika menjadi *timeline owner*. |
+
+**Resource borrowing:** home team BA dan keanggotaan project adalah dua hal berbeda. Perubahan atasan PM tidak otomatis memindahkan atau menghapus assignment project yang sudah ada.
+
+## 🛠️ Technology Stack
+
+Versi di bawah diambil dari file `frontend/package.json` dan `backend/ProjectPulse.Api.csproj` pada **source v0.4**. Untuk dependency npm, simbol `^` adalah rentang versi yang diizinkan, **bukan jaminan versi persis yang terpasang**.
+
+| Layer | Technology | Version in source |
+|:--|:--|:--|
+| Frontend | React / React DOM | `^19.1.1` |
+| Frontend language | TypeScript | `^5.9.2` |
+| Build & dev server | Vite | `^7.1.0` |
+| React Vite plugin | @vitejs/plugin-react | `^5.0.0` |
+| Backend | ASP.NET Core / .NET | `net10.0` |
+| ORM — SQLite | Microsoft.EntityFrameworkCore.Sqlite | `10.0.3` |
+| ORM — PostgreSQL | Npgsql.EntityFrameworkCore.PostgreSQL | `10.0.3` |
+| Authentication library | Microsoft.AspNetCore.Authentication.JwtBearer | `10.0.3` |
+| Local database | SQLite | Embedded file database |
+| Development server database | PostgreSQL | Provider supported; DB setup required |
+| UI / charts | CSS + React components | Custom UI, no MUI/ECharts dependency in current source |
+
+**Version note:** paket source ini adalah **ProjectPulse v0.4**, tetapi field `version` di `frontend/package.json` masih `0.3.0` (metadata package yang belum dinaikkan).
+
+**Database strategy:** SQLite untuk pengembangan lokal; PostgreSQL untuk development server. API memilih provider melalui konfigurasi EF Core. Peralihan provider **tidak otomatis memigrasikan data** dari SQLite ke PostgreSQL.
+
+## 🧭 How It Works
+
+```mermaid
+flowchart LR
+    UI[React + TypeScript + Vite] --> API[ASP.NET Core Web API]
+    API --> EF[Entity Framework Core]
+    EF --> SQLITE[(SQLite - Local)]
+    EF --> PG[(PostgreSQL - Development Server)]
+```
+
+**Typical workflow**
+
+1. **PM** membuat project dan memilih BA sebagai *timeline owner*.
+2. **BA** mendefinisikan milestone (Requirement → Design → Development → SIT → UAT → Implementation → PIR) dan memperbarui timeline/progress.
+3. **BA member** mengelola task serta melaporkan kendala.
+4. **PM** memonitor pelaksanaan dan menambahkan resource lintas tim bila diperlukan.
+5. **Department Head** dan **Division Head** melihat ringkasan proyek sesuai otorisasi, lalu membuka detail saat ada risiko.
+
+## 📂 Project Structure
+
+```text
+ProjectPulse/
+├── backend/                      # ASP.NET Core Web API (.NET 10)
+│   ├── Program.cs                # Bootstrap, routes, API, authentication
+│   ├── AppDbContext.cs           # EF Core data access
+│   ├── Models.cs                 # Entity & request/response models
+│   ├── SeedData.cs               # Dummy users, projects, tasks & issues
+│   ├── LocalAuth.cs              # Authentication untuk local demo
+│   ├── LocalUpgrade.cs           # Upgrade struktur SQLite lokal
+│   ├── ProjectPulse.Api.csproj   # Target framework & NuGet packages
+│   └── appsettings.json          # Konfigurasi provider & security
+├── frontend/                     # React + TypeScript + Vite
+│   ├── public/branding/          # Logo SVG/PNG dan favicon ICO
+│   ├── src/
+│   │   ├── App.tsx               # Halaman dan komponen utama
+│   │   ├── api.ts                # API client & auth helpers
+│   │   ├── main.tsx              # Entry point React
+│   │   └── style.css             # Custom design system
+│   ├── package.json              # Frontend dependencies & scripts
+│   └── vite.config.ts            # Vite dev server & /api proxy
+├── sql/                          # PostgreSQL schema & upgrade scripts
+├── docs/                         # API, ERD, changelog & UI/UX blueprint
+├── previews/                     # Screenshot UI untuk README
+├── prototype/                    # Prototype HTML standalone
+├── tests/                        # Script pengecekan struktur
+├── docker-compose.postgres.yml   # Opsi database PostgreSQL
+├── CARA_JALANKAN_LOCAL.txt       # Catatan personal cara menjalankan
+└── README.md                     # Dokumentasi project di GitHub
+```
+
+## 🚀 Getting Started
+
+**Prerequisites:** Windows / PowerShell, **.NET SDK 10**, **Node.js 22.12+**, dan npm.
+
+**1. Start backend** (terminal pertama):
 
 ```powershell
 cd C:\work\ProjectPulse\backend
@@ -32,9 +199,7 @@ dotnet restore
 dotnet run --no-launch-profile
 ```
 
-Backend akan membuat file SQLite `backend\Data\projectpulse.db` dan data contoh pada **start pertama**. Tes di browser: <http://127.0.0.1:5088/api/health>.
-
-Terminal B — frontend:
+**2. Start frontend** (terminal kedua):
 
 ```powershell
 cd C:\work\ProjectPulse\frontend
@@ -42,137 +207,55 @@ npm.cmd install
 npm.cmd run dev
 ```
 
-Buka <http://127.0.0.1:5173>. Proxy Vite meneruskan `/api` ke backend port 5088.
+**3. Open the application:** http://127.0.0.1:5173
 
-**Jangan** membuka `frontend/index.html` langsung sebagai file; frontend React membutuhkan Vite/API. Untuk demo tanpa backend, gunakan `prototype/index.html` (UI konsep yang sebelumnya dibuat, data tersimpan di localStorage).
+- Backend health endpoint: http://127.0.0.1:5088/api/health
+- Local SQLite file: `backend/Data/projectpulse.db` (dibuat saat startup pertama)
+- Demo akun tersedia pada local login page; password default untuk akun dummy dicatat pada `CARA_JALANKAN_LOCAL.txt`.
+- Perintah `npm.cmd` dipakai untuk menghindari pembatasan eksekusi `npm.ps1` di PowerShell Windows.
 
-### Login demo lokal (v0.4)
+Untuk langkah detail, troubleshooting, backup/reset database, dan workflow Git, lihat **[CARA_JALANKAN_LOCAL.txt](CARA_JALANKAN_LOCAL.txt)**.
 
-Akses `http://127.0.0.1:5173`. Tampilan pertama sekarang **login page**, bukan dashboard dengan dropdown role. Klik nama akun demo untuk mengisi email, masukkan password, lalu Sign In. Dashboard dipilih dari `role` user yang diverifikasi API. Logout tersedia di sidebar.
+## 🔐 Security & Important Notes
 
-**Password awal SEMUA akun: `Demo@12345`**. Ini hanya password dummy yang ditetapkan saat seed. Di database, password **tidak disimpan sebagai plaintext atau reversible encryption**, melainkan PBKDF2-HMAC-SHA256 (210.000 iterasi, random salt per user). Session lokal memakai token 256-bit acak; hanya hash SHA256 token yang disimpan di SQLite, kedaluwarsa setelah 8 jam; disimpan di `sessionStorage` browser dan dihapus saat logout.
+> [!WARNING]
+> **MVP / local demo only. Not production-ready.**
+>
+> - Password demo di database disimpan sebagai **salted PBKDF2 hash**, bukan reversible encryption atau teks biasa.
+> - Reset password tanpa verifikasi identitas hanya untuk demo lokal; jangan mengekspos mode ini ke jaringan publik/perusahaan.
+> - Provider PostgreSQL dan mode JWT sudah disiapkan, tetapi integrasi frontend Microsoft Entra ID / MSAL untuk deployment belum selesai.
+> - File database, credentials, API keys, dan konfigurasi rahasia tidak boleh dimasukkan ke repository.
+> - End-to-end build dan deployment penuh **belum tervalidasi** pada lingkungan pembuatan source; lakukan pengujian lokal terlebih dahulu.
 
-| Email | Nama (dummy) | Role | Lingkup |
-|---|---|---|---|
-| admin@example.test | Fajar Administrator | Admin | User management and BA reporting line |
-| division@example.test | Arman Prasetyo | DivisionHead | Semua departemen IT Division |
-| head.project@example.test | Dimas Hartono | DepartmentHead | Department Project |
-| head.infrastructure@example.test | Citra Rahmawati | DepartmentHead | Infrastructure |
-| head.operations@example.test | Rahmat Hakim | DepartmentHead | IT Operations |
-| pm01@example.test | Rina Anggraini | PM | Project yang dipimpin |
-| pm02@example.test | Budi Setiawan | PM | Project yang dipimpin |
-| ba01@example.test | Andi Pratama | BA | Project/task sesuai assignment |
-| ba02@example.test | Sari Dewi | BA | Project/task sesuai assignment |
-| ba03@example.test | Maya Lestari | BA | Project/task sesuai assignment |
-| ba04@example.test | Nadia Putri | BA | Akun tambahan (belum ada task) |
+## 🗺️ Roadmap
 
-**Organisasi dummy**: IT Division → Department Project → Project Management (PM) → Business Analyst (BA). Ada department dummy lain (Infrastructure dan IT Operations) agar helicopter view punya contoh lintas-department. Level PM dan BA adalah penugasan role pada unit, bukan tabel departemen terpisah.
+- [x] UI dashboard menurut role (BA, PM, Department Head, Division Head)
+- [x] Admin dan user management untuk data demo
+- [x] Multi-BA assignment & resource borrowing
+- [x] REQ ID, internal HO requester, current project status
+- [x] BA-managed milestone, timeline, task, issue, progress
+- [x] Ringkasan chart untuk helicopter view
+- [x] SQLite lokal & provider PostgreSQL di backend
+- [ ] Uji build dan seluruh user journey end-to-end di Windows
+- [ ] Implementasi lengkap Microsoft Entra ID / SSO pada frontend dan deployment
+- [ ] Database migrations formal serta deployment PostgreSQL development
+- [ ] Automated tests, security review, dan CI/CD
+- [ ] Baseline approval, notifikasi, dan workload/capacity analytics lanjutan
 
-**Reset password lokal**: klik “Lupa password? Reset untuk demo”, masukkan email akun dan password baru (minimum 10 karakter), konfirmasi, lalu submit. Reset berhasil akan membatalkan semua session aktif akun tersebut. **Tidak ada verifikasi email atau identitas**, sehingga siapa pun yang tahu alamat akun demo bisa meresetnya. Ini **sengaja hanya untuk demonstrasi lokal**; jangan menggunakannya di jaringan atau production. Endpoint reset/login demo tidak dimap sama sekali ketika mode `Jwt` dipakai. Login dan reset dibatasi frekuensinya per alamat IP (8 request/menit, termasuk daftar akun demo).
+## 📚 Documentation
 
-**Upgrade dari v0.2**: Jika sudah ada `Data/projectpulse.db`, backend otomatis menambah kolom password hash dan tabel session tanpa menghapus task/project, lalu mengisi credential dummy untuk akun lama. Email akun v0.2 yang lama (mis. `head.data@example.test`) **tetap dipertahankan** agar existing data konsisten. Halaman login mengambil daftar akun yang benar-benar ada di DB, jadi gunakan email yang ditampilkan di situ. Reset database lokal jika ingin akun/email yang sama persis seperti tabel di atas.
+- [`docs/ERD.md`](docs/ERD.md) — Entity relationships dan model data
+- [`docs/API.md`](docs/API.md) — Dokumentasi API (sebagian kontrak historis; lihat changelog untuk pembaruan v0.4)
+- [`docs/CHANGELOG_v0.4.md`](docs/CHANGELOG_v0.4.md) — Fitur terbaru, access matrix & known limitations
+- [`docs/UI_UX_BLUEPRINT.md`](docs/UI_UX_BLUEPRINT.md) — Rancangan UI/UX
+- [`CARA_JALANKAN_LOCAL.txt`](CARA_JALANKAN_LOCAL.txt) — Catatan praktis untuk menjalankan project
 
-### Yang baru di v0.4
+---
 
-- **Admin User Administration**: add/edit/disable member; change home PM team of an assigned BA without deleting project assignments; assign BA on project and reassign timeline owner.
-- **Borrowing BA**: if Maya reports to Budi, Rina can still assign Maya to an MCS project in Rina's portfolio. A home team change does not affect project membership.
-- **PM**: create project and choose the BA timeline owner; assign additional BAs (no milestone/progress update permission).
-- **Timeline-owner BA**: owns milestone creation, planned/forecast date changes, phase updates, milestone progress and health. Assigned BAs manage their own tasks/issues.
-- **REQ ID**: `REQYYYYMMDDNNN` using WIB creation date and a daily DB counter. New SQL PK remains unique. For example `REQ20261010001`.
-- **HO requester**: name and department, informational only, **not a login account**.
-- **Current Status**: Requirement, Design, Development, SIT, UAT, Implementation, PIR, On Hold, Completed. Separate from Health.
-- **Executive charts**: health donut, project phases / pipeline, monthly delivery calendar at PM, Dept Head, Division Head.
+<div align="center">
 
-**Existing local SQLite data:** Before first v0.4 startup, stop backend and **backup** `backend/Data/projectpulse.db` (and related WAL files if present). Bootstrapping upgrades columns and converts legacy `PRJ-*` project PKs plus dependent foreign keys into `REQ*`; normal task/project data is preserved. The upgrade is **not** a substitute for a regular production migration framework.
+**ProjectPulse** — *From daily tasks to strategic visibility.*
 
-**PostgreSQL development:** Use latest `sql/001_postgresql_init.sql` for a fresh DB. The `sql/003_postgresql_upgrade_v04.sql` is schema-only; it intentionally does not rekey old `PRJ-*` data. Hosted authentication requires production Microsoft Entra ID integration, not the local demo login/reset.
+<sub>Internal project monitoring MVP · Demo dataset · Version 0.4</sub>
 
-See `docs/CHANGELOG_v0.4.md` for the authorization matrix and full API changes.
-
-### Branding / logo yang bisa diganti
-
-Semua asset berada di `frontend/public/branding/`:
-- `logo.svg` — master logo (vektor, rekomendasi mengganti file ini untuk sidebar dan login).
-- `logo.png` — logo raster resolusi tinggi.
-- `favicon.ico` — ikon tab browser (16, 32, 48, 64, 128, 256 pixel).
-
-Untuk rebranding, ganti file-file itu dengan nama yang sama, lalu refresh halaman (hard reload jika favicon masih di-cache). Warna tema dikendalikan CSS di `frontend/src/style.css`. Tidak ada hardcode logo di komponen.
-
-### Reset database lokal
-
-Untuk mengulang seed dari nol: **matikan backend terlebih dahulu**, backup data bila perlu, lalu hapus `backend\Data\projectpulse.db` dan file journal/WAL jika ada. Saat backend dijalankan, skema & seed dibuat lagi. `EnsureCreated` tidak menerapkan schema migrations pada DB yang sudah ada.
-
-## 2. MVP scope & limitations
-
-Implemented in source: project portfolio per role, BA task/issue updates, admin member management and team reassignment, project resource borrowing, REQ ID, HO requester, current-status phase, BA timeline and progress updates, portfolio charts, local session/password demo, PostgreSQL schema.
-
-Not production-ready: end-to-end .NET build validation, SSO/MSAL wiring, approval workflow for baseline changes, audit-independent admin action logs, critical path, attachments, scheduler and notification service. The hosted environment cannot use local password login; enable JWT and implement frontend MSAL flow before deployment.
-
-## 3. Deploy ke PostgreSQL development (nanti)
-
-**Tidak perlu melakukan langkah ini sekarang.**
-
-1. Minta DBA menyediakan database/role PostgreSQL dan SSL; jalankan `sql/001_postgresql_init.sql` satu kali pada database **baru**, misalnya:
-   ```powershell
-   psql "host=DB_HOST dbname=projectpulse user=SCHEMA_OWNER sslmode=require" -v ON_ERROR_STOP=1 -f sql/001_postgresql_init.sql
-   ```
-2. Opsional, jalankan `sql/002_postgresql_initial_master.sql` (division/department contoh) lalu masukkan `users.email` **sesuai identity perusahaan yang terverifikasi**, beserta role dan department. Admin CRUD endpoints exist; hosted authentication still requires Entra integration.
-3. Set environment variable pada **backend server**, bukan di frontend/browser:
-   ```powershell
-   $env:Database__Provider="Postgres"
-   $env:ConnectionStrings__Postgres="Host=DB_HOST;Port=5432;Database=projectpulse;Username=app_user;Password=SECRET;SSL Mode=Require"
-   $env:Security__Mode="Jwt"
-   $env:Security__JwtAuthority="https://login.microsoftonline.com/TENANT_ID/v2.0"
-   $env:Security__JwtAudience="api://API_APP_CLIENT_ID"
-   ```
-4. Register Web/API pada Microsoft Entra ID. Configure allowed token scopes, authority and audience. **Frontend belum menyertakan MSAL login**; tambahkan before exposing app to users. Ubah frontend `api.ts` untuk mengirim bearer token, **bukan** header demo. Jangan menggunakan mode `Local` di server PostgreSQL; backend sengaja menolaknya.
-5. Deploy backend via IIS/container/reverse proxy HTTPS, frontend static files. Batasi network/security group ke PostgreSQL, buat backup, audit, dan secrets di secret manager.
-6. Siapkan migration pipeline dan validasi parity SQLite/PostgreSQL. SQL baseline di folder ini **bukan** auto-migration untuk database berisi data. Gunakan EF Core migrations terpisah per provider atau versioned SQL scripts dengan DBA review. Rujukan: https://learn.microsoft.com/en-us/ef/core/managing-schemas/migrations/providers
-
-**Catatan penting:** NuGet Npgsql/EF Core 10 digunakan agar support .NET 10; jangan campur major version EF Core 9 vs 10. Tidak ada password sebenarnya di source.
-
-## 4. Aturan bisnis inti
-
-- `Task.owner_user_id`: satu PIC utama; `task_contributors`: lebih dari satu contributor.
-- `project_members`: multi-project & multi-BA.
-- BA yang ditugaskan bisa mengelola task miliknya atau task tempat ia menjadi contributor. PM membuat project, memilih BA timeline owner dan menambahkan BA; Dept/Division Head read-only.
-- Semua izin project dicek **pada backend** di setiap endpoint, bukan melalui penyembunyian menu saja.
-- Progress task **bukan** sumber langsung progress project. BA timeline owner memutakhirkan milestone; progress project = Σ(weight × progress)/100 ketika total bobot 100.
-- Health project (`On Track / At Risk / Delayed / Blocked`) memerlukan evaluasi dan alasan BA timeline owner; tidak otomatis hijau karena task banyak Done.
-- Baseline & forecast dua nilai berbeda. **Baseline approval formal belum dibangun**.
-- `Task.Version` optimistic concurrency pada PATCH. Activity log mencatat perubahan task, health, current status dan timeline.
-
-## 5. Struktur proyek
-
-```text
-ProjectPulse/
-├─ backend/
-│  ├─ Program.cs                 # endpoint, identity, role/scope authorization
-│  ├─ Models.cs                  # domain entities
-│  ├─ AppDbContext.cs            # EF Core mapping & snake_case columns
-│  ├─ SeedData.cs                # sample local SQLite
-│  ├─ LocalUpgrade.cs            # v0.2/v0.3 local SQLite compatibility upgrade
-│  ├─ ProjectPulse.Api.csproj
-│  └─ appsettings.json
-├─ frontend/
-│  ├─ package.json
-│  └─ src/ (React UI, API adapter, CSS)
-├─ sql/
-│  ├─ 001_postgresql_init.sql
-│  ├─ 002_postgresql_initial_master.sql
-│  └─ 003_postgresql_upgrade_v04.sql
-├─ docs/ERD.md
-├─ docs/API.md
-├─ docs/UI_UX_BLUEPRINT.md
-├─ prototype/index.html          # HTML UX prototype standalone
-└─ docker-compose.postgres.yml   # opsional; PostgreSQL test, bukan deployment utama
-```
-
-## 6. Urutan implementasi berikutnya
-
-1. Build + smoke-test backend dan frontend pada PC Windows yang punya SDK, perbaiki kalau ada masalah compile/runtime.
-2. Integrasi login Entra ID/MSAL, provisioning user, role permission matrix yang final, cross-department sharing policy.
-3. Versioned migrations + approval workflow baseline, evidences, notifikasi, data freshness dan KPI resmi.
-4. Automated tests, audit append-only, observability, load testing, packaging deployment DEV.
-
-**Blueprint UI awal** tetap ada di `docs/UI_UX_BLUEPRINT.md`. Perubahan di source MVP v0.4 adalah implementasi engineering awal, bukan jaminan seluruh UX prototype sebelumnya sudah 1:1 terhubung API.
+</div>

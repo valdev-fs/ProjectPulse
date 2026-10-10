@@ -1,0 +1,181 @@
+===============================================================================
+                    PROJECTPULSE - CATATAN PRIBADI
+                CARA MENJALANKAN DI PC WINDOWS (v0.4)
+===============================================================================
+
+FILE INI UNTUK DIRI SENDIRI (bukan panduan umum GitHub).
+Project: React + TypeScript + Vite + ASP.NET Core (.NET 10)
+DB saat ini: SQLite lokal. Ketika deploy development: PostgreSQL.
+
+A. LOKASI PROJECT
+------------------
+Lokasi contoh: C:\work\ProjectPulse
+Harus ada 2 folder berikut:
+  C:\work\ProjectPulse\backend
+  C:\work\ProjectPulse\frontend
+
+Jika kamu extract langsung di C:\work (tanpa folder ProjectPulse),
+sesuaikan perintah cd ke C:\work\backend dan C:\work\frontend.
+
+B. CEK APLIKASI YANG DIPERLUKAN (PERTAMA KALI)
+------------------------------------------------
+Buka PowerShell dan cek:
+
+  dotnet --version
+  node --version
+  npm.cmd --version
+  git --version
+
+Butuh .NET SDK 10 dan Node.js 22.12+ (atau yang kompatibel).
+Jika npm install sudah pernah sukses, tidak perlu selalu install ulang.
+
+C. JALANKAN BACKEND (POWERSHELL TERMINAL 1)
+-------------------------------------------
+  cd C:\work\ProjectPulse\backend
+  $env:ASPNETCORE_ENVIRONMENT = "Development"
+  $env:ASPNETCORE_URLS = "http://127.0.0.1:5088"
+  dotnet restore
+  dotnet run --no-launch-profile
+
+Biarkan terminal tetap terbuka.
+Cek backend: http://127.0.0.1:5088/api/health
+
+Database SQLite lokal otomatis dibuat di:
+  C:\work\ProjectPulse\backend\Data\projectpulse.db
+
+D. JALANKAN FRONTEND (POWERSHELL TERMINAL 2)
+--------------------------------------------
+  cd C:\work\ProjectPulse\frontend
+  npm.cmd install
+  npm.cmd run dev
+
+Buka browser:
+  http://127.0.0.1:5173
+
+CATATAN: Pakai npm.cmd, bukan npm, bila PowerShell memblokir npm.ps1.
+Setelah dependency terpasang, pada startup berikutnya cukup npm.cmd run dev.
+
+E. LOGIN DEMO
+--------------
+Password awal akun dummy: Demo@12345
+
+Admin           admin@example.test
+Division Head   division@example.test
+Dept Head       head.project@example.test
+PM              pm01@example.test
+PM lain         pm02@example.test
+BA              ba01@example.test
+BA lain         ba02@example.test
+BA lain         ba03@example.test
+BA lain         ba04@example.test
+
+Perhatian: bila database pernah dibuat versi lama atau password sudah
+kamu ubah, credential di atas bisa berbeda. Akun aktif bisa dilihat
+pada daftar akun demo di halaman login.
+
+Lupa password (KHUSUS DEMO LOKAL):
+  Login page -> Lupa password -> masukkan email -> password baru.
+  Tidak perlu email verifikasi. JANGAN gunakan metode ini di server.
+
+F. MEMBERHENTIKAN APLIKASI
+----------------------------
+Tekan Ctrl+C di terminal backend dan frontend.
+Tidak perlu menghapus database atau install package lagi.
+
+G. BACKUP / RESET DATABASE SQLITE
+----------------------------------
+Backup (terutama sebelum mengganti source / upgrade):
+  1. Matikan BACKEND terlebih dahulu.
+  2. Copy folder backend\Data\ ke tempat backup.
+     Sertakan file -wal dan -shm jika ada.
+
+Reset demo dari nol (DATA TASK / PROJECT LOKAL HILANG):
+  1. Matikan backend.
+  2. Backup dahulu jika perlu.
+  3. Hapus file backend\Data\projectpulse.db
+     dan file -wal / -shm terkait bila ada.
+  4. Jalankan backend kembali untuk seed data dummy baru.
+
+JANGAN upload file .db ke GitHub. File SQLite tidak otomatis berubah
+menjadi PostgreSQL saat deploy development.
+
+H. GANTI LOGO / ICON
+---------------------
+Lokasi branding:
+  frontend\public\branding\logo.svg
+  frontend\public\branding\logo.png
+  frontend\public\branding\favicon.ico
+
+Ganti file dengan nama sama, lalu refresh browser (Ctrl+F5 jika perlu).
+
+I. PERINTAH GIT (SETELAH REPOSITORY GITHUB SUDAH DIHUBUNGKAN)
+-------------------------------------------------------------
+Pertama kali (repo GitHub harus sudah dibuat, kosong):
+
+  cd C:\work\ProjectPulse
+  git init
+  git branch -M main
+  git add .
+  git status
+  git commit -m "Initial commit - ProjectPulse v0.4"
+  git remote add origin https://github.com/USERNAME_GITHUB/ProjectPulse.git
+  git push -u origin main
+
+GANTI USERNAME_GITHUB DENGAN USERNAME ASLI.
+Jika git init sudah pernah dijalankan, tidak perlu git init lagi.
+Jika origin sudah ada, cek dengan: git remote -v
+
+Update source berikutnya:
+
+  cd C:\work\ProjectPulse
+  git status
+  git add .
+  git commit -m "Describe change here"
+  git push
+
+PENTING: Sebelum git commit, pastikan daftar git status TIDAK berisi:
+  - backend\Data\projectpulse.db
+  - file .env yang berisi password / secret
+  - frontend\node_modules
+  - backend\bin atau backend\obj
+  - frontend\dist
+
+Disarankan gunakan GitHub Private repository untuk project internal.
+
+J. TROUBLESHOOTING SINGKAT
+--------------------------
+1) npm.ps1 cannot be loaded / running scripts is disabled
+   SOLUSI: npm.cmd install lalu npm.cmd run dev.
+
+2) 'dotnet' is not recognized atau SDK target net10.0 tidak ada
+   SOLUSI: Install .NET SDK 10, bukan hanya .NET runtime.
+
+3) Browser 5173 hidup tapi data gagal dimuat
+   SOLUSI: Pastikan backend menyala pada port 5088.
+   Cek http://127.0.0.1:5088/api/health
+
+4) Port 5173 / 5088 sedang dipakai
+   SOLUSI: Tutup proses lama dan jalankan lagi. Jangan ubah port
+   frontend tanpa memeriksa konfigurasi proxy frontend\vite.config.ts.
+
+5) Login selalu gagal
+   SOLUSI: Pastikan tidak salah email/password, lihat daftar demo.
+   Jika hanya butuh data dummy baru, lakukan reset database dengan
+   langkah pada bagian G (akan menghapus data lokal).
+
+6) File README di GitHub tidak muncul dengan benar
+   SOLUSI: Pastikan README.md berada di ROOT folder project dan
+   direktori previews/ ikut di-upload ke repository.
+
+K. SEBELUM DEPLOY DEVELOPMENT POSTGRESQL
+-----------------------------------------
+- Siapkan database PostgreSQL dan connection string yang aman.
+- Gunakan skrip SQL di folder sql/ sesuai versi source dan kondisi DB.
+- Konfigurasikan Database__Provider=Postgres di SERVER, bukan lokal.
+- Local demo auth bukan untuk server; integrasi Entra ID / JWT harus
+  diselesaikan dan diuji sebelum akses pengguna sesungguhnya.
+- Migrasi data SQLite -> PostgreSQL TIDAK otomatis.
+
+===============================================================================
+           QUICK REMINDER: 2 TERMINAL, BACKEND 5088, FRONTEND 5173
+===============================================================================
