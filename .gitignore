@@ -1,0 +1,10 @@
+**/bin/
+**/obj/
+**/node_modules/
+**/dist/
+**/Data/*.db
+**/Data/*.db-shm
+**/Data/*.db-wal
+.env
+*.user
+.vscode/

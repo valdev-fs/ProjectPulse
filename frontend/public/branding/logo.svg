@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="ProjectPulse">
+<defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#0a274b"/><stop offset="1" stop-color="#102e66"/></linearGradient><linearGradient id="letter" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#4dd4ff"/><stop offset="0.56" stop-color="#188ff7"/><stop offset="1" stop-color="#2563eb"/></linearGradient></defs>
+<rect x="0" y="0" width="256" height="256" rx="60" fill="url(#bg)"/>
+<path d="M70 204V62h71c45 0 68 20 68 58 0 38-25 60-69 60h-26v24H70zm44-59h26c22 0 33-8 33-25 0-16-11-24-33-24h-26z" fill="url(#letter)"/>
+<path d="M88 139h35l11-18 13 39 12-21h30" fill="none" stroke="#fff" stroke-width="10" stroke-linejoin="round" stroke-linecap="round"/>
+</svg>

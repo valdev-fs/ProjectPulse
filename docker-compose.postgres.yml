@@ -1,0 +1,18 @@
+# OPTIONAL PostgreSQL untuk uji integrasi, BUKAN langkah yang dibutuhkan untuk lokal SQLite.
+# Jangan gunakan kredensial contoh ini untuk server perusahaan.
+services:
+  postgres:
+    image: postgres:17
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: projectpulse
+      POSTGRES_USER: projectpulse
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in shell}
+    ports:
+      - "127.0.0.1:5434:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./sql/001_postgresql_init.sql:/docker-entrypoint-initdb.d/001_init.sql:ro
+      - ./sql/002_postgresql_initial_master.sql:/docker-entrypoint-initdb.d/002_master.sql:ro
+volumes:
+  pgdata:
